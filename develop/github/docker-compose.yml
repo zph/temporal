@@ -31,6 +31,28 @@ services:
       !!merge <<: *healthcheck-defaults
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot"]
 
+  tidb_v7:
+    image: pingcap/tidb:v7.5.7
+    command: ["-config", "/tidb.toml"]
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./tidb-config.toml:/tidb.toml:ro
+    healthcheck:
+      !!merge <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -P 4000 -u root"]
+
+  tidb_v8:
+    image: pingcap/tidb:v8.5.5
+    command: ["-config", "/tidb.toml"]
+    ports:
+      - "4001:4000"
+    volumes:
+      - ./tidb-config.toml:/tidb.toml:ro
+    healthcheck:
+      !!merge <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -P 4000 -u root"]
+
   postgresql:
     image: postgres:13.5
     ports:
