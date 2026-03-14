@@ -2,6 +2,7 @@ package tests
 
 import (
 	"net"
+	"os"
 	"path/filepath"
 	"strconv"
 	"testing"
@@ -128,19 +129,21 @@ func SetupMySQLSchema(t *testing.T, cfg *config.SQL) {
 		}
 	}
 
-	schemaPath, err = filepath.Abs(testMySQLVisibilitySchema)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	statements, err = p.LoadAndSplitQuery([]string{schemaPath})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	for _, stmt := range statements {
-		if err = db.Exec(stmt); err != nil {
+	if os.Getenv("SKIP_VISIBILITY_SCHEMA") != "1" {
+		schemaPath, err = filepath.Abs(testMySQLVisibilitySchema)
+		if err != nil {
 			t.Fatal(err)
+		}
+
+		statements, err = p.LoadAndSplitQuery([]string{schemaPath})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		for _, stmt := range statements {
+			if err = db.Exec(stmt); err != nil {
+				t.Fatal(err)
+			}
 		}
 	}
 }

@@ -148,6 +148,18 @@ jobs:
               persistence_type: sql
               persistence_driver: postgres12_pgx
               containers: [postgresql]
+            tidb_v7:
+              persistence_type: sql
+              persistence_driver: mysql8
+              containers: [tidb_v7]
+              extra_env: {MYSQL_SEEDS: "127.0.0.1", MYSQL_PORT: "4000"}
+              tidb_init_port: "4000"
+            tidb_v8:
+              persistence_type: sql
+              persistence_driver: mysql8
+              containers: [tidb_v8]
+              extra_env: {MYSQL_SEEDS: "127.0.0.1", MYSQL_PORT: "4001"}
+              tidb_init_port: "4001"
           JOB_TYPES: |
             functest:
               cmd: make functional-test-coverage
@@ -542,6 +554,16 @@ jobs:
           # Word splitting is intentional here.
           # shellcheck disable=SC2046
           docker compose -f ${{ env.DOCKER_COMPOSE_FILE }} up --wait $(docker compose -f ${{ env.DOCKER_COMPOSE_FILE }} ps --services)
+
+      - name: Initialize TiDB user
+        if: ${{ matrix.tidb_init_port }}
+        run: |
+          mysql -h 127.0.0.1 -P ${{ matrix.tidb_init_port }} -u root < ./develop/github/tidb-init.sql
+
+      - name: Apply extra environment variables
+        if: ${{ matrix.extra_env }}
+        run: |
+          echo '${{ toJson(matrix.extra_env) }}' | jq -r 'to_entries[] | "\(.key)=\(.value)"' >> "$GITHUB_ENV"
 
       - name: Run functional test
         timeout-minutes: ${{ matrix.github_timeout }}

@@ -82,7 +82,9 @@ func (s *TestCluster) SetupTestDatabase() {
 		schemaDir = path.Join(temporalPackageDir, schemaDir)
 	}
 	s.LoadSchema(path.Join(schemaDir, "temporal", "schema.sql"))
-	s.LoadSchema(path.Join(schemaDir, "visibility", "schema.sql"))
+	if os.Getenv("SKIP_VISIBILITY_SCHEMA") != "1" {
+		s.LoadSchema(path.Join(schemaDir, "visibility", "schema.sql"))
+	}
 }
 
 // Config returns the persistence config for connecting to this test cluster

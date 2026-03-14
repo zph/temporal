@@ -14,6 +14,13 @@ services:
       - ./mysql-init:/docker-entrypoint-initdb.d
     networks:
       - temporal-dev-network
+  tidb:
+    image: pingcap/tidb:v7.5.7
+    container_name: temporal-dev-tidb
+    ports:
+      - "4000:4000"
+    networks:
+      - temporal-dev-network
   cassandra:
     image: cassandra:3.11
     container_name: temporal-dev-cassandra
