@@ -409,7 +409,7 @@ CREATE TABLE nexus_endpoints (
 
 -- Stores the version of Nexus endpoints table as a whole
 CREATE TABLE nexus_endpoints_partition_status (
-    id      INT NOT NULL DEFAULT 0 CHECK (id = 0),  -- Restrict the table to a single row since it will only be used for endpoints
+    id      INT NOT NULL DEFAULT 0 CHECK (id = 0),  -- Restrict the table to a single row since it will only be used for endpoints. NOTE: CHECK constraint requires TiDB >= 7.2 to be enforced; older TiDB versions silently ignore it.
     version BIGINT NOT NULL,                        -- Version of the nexus_endpoints table
     PRIMARY KEY (id)
 );
